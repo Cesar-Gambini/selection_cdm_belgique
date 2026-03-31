@@ -1233,6 +1233,67 @@ a {
   }
 }
 
+/* ─── COOKIE BANNER ────────────────────────────────────── */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--noir-card);
+  border-top: 1px solid var(--gris-border);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.cookie-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.cookie-text {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--gris);
+  line-height: 1.5;
+  min-width: 200px;
+}
+
+.cookie-text a {
+  color: var(--jaune);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.cookie-actions .btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .cookie-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--spacing-md);
+  }
+
+  .cookie-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ─── STAGGERED CARD ANIMATIONS ─────────────────────────── */
 .player-card {
   opacity: 0;
