@@ -115,6 +115,9 @@
     updateProgress();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
+    // Preload images for the next step in background
+    preloadNextStep();
+
     if (step === 0) {
       const home = $('#home-section');
       home.style.display = '';
@@ -555,6 +558,38 @@
     return window.location.origin + window.location.pathname + '?' + params.toString();
   }
 
+  // ─── PRELOAD IMAGES ────────────────────────────────────
+  const preloadedSteps = new Set();
+
+  function preloadStepImages(stepIndex) {
+    // stepIndex: 0=home, 1-4=positions, 5=reserves
+    if (preloadedSteps.has(stepIndex)) return;
+    preloadedSteps.add(stepIndex);
+
+    let players = [];
+    if (stepIndex >= 1 && stepIndex <= 4) {
+      const cfg = STEPS_CONFIG[stepIndex - 1];
+      players = PLAYERS.filter(p => p.position === cfg.key);
+    } else if (stepIndex === 5) {
+      // Reserves: preload all non-GK players
+      players = PLAYERS.filter(p => p.position !== 'Gardien');
+    }
+
+    players.forEach(p => {
+      if (p.photo) {
+        const img = new Image();
+        img.src = p.photo;
+      }
+    });
+  }
+
+  function preloadNextStep() {
+    const next = state.currentStep + 1;
+    if (next <= 5) {
+      preloadStepImages(next);
+    }
+  }
+
   // ─── INIT ──────────────────────────────────────────────
   function init() {
     if (checkSharedURL()) {
@@ -572,6 +607,9 @@
 
     state.currentStep = 0;
     updateProgress();
+
+    // Preload goalkeeper images while user is on home screen
+    preloadNextStep();
 
     const startBtn = $('#start-btn');
     if (startBtn) {

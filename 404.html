@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page introuvable — Ma Sélection Belge 2026</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='0' y='0' width='11' height='32' fill='%230A0A0A'/><rect x='11' y='0' width='10' height='32' fill='%23FDDA24'/><rect x='21' y='0' width='11' height='32' fill='%23E30613'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .error-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .error-code {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(5rem, 15vw, 12rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #E30613, #FDDA24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #F5F5F5;
+      margin-bottom: 1rem;
+    }
+
+    .error-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: #999;
+      max-width: 400px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .error-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      background: #FDDA24;
+      color: #0A0A0A;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .error-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(253, 218, 36, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="site-header site-header--legal">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <span class="flag" aria-hidden="true"><span class="f-black"></span><span class="f-yellow"></span><span class="f-red"></span></span>
+        Sélection 2026
+      </a>
+    </div>
+  </header>
+
+  <main class="error-page">
+    <div class="error-code">404</div>
+    <h1 class="error-title">Hors-jeu !</h1>
+    <p class="error-text">Cette page n'existe pas. Peut-être qu'elle a été exclue de la sélection, elle aussi.</p>
+    <a href="index.html" class="error-btn">Composer ma sélection &rarr;</a>
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Liens légaux">
+      <a href="a-propos.html">À propos</a>
+      <span class="footer-sep" aria-hidden="true">/</span>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <span class="footer-sep" aria-hidden="true">/</span>
+      <a href="confidentialite.html">Confidentialité</a>
+      <span class="footer-sep" aria-hidden="true">/</span>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 maselectiondiables26 — Tous droits réservés</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
