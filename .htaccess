@@ -1,1 +1,54 @@
+# ─── Page 404 personnalisée ───────────────────────────────
 ErrorDocument 404 /404.html
+
+# ─── Compression GZIP ─────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# ─── Cache navigateur ─────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Images : 1 an (elles changent rarement)
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+
+  # CSS/JS : 1 mois
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+
+  # Fonts : 1 an
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+
+  # HTML : 1 heure (pour les mises à jour)
+  ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+# ─── Cache-Control headers ────────────────────────────────
+<IfModule mod_headers.c>
+  # Assets statiques : immutable pendant 1 an
+  <FilesMatch "\.(webp|jpg|png|svg|woff2|woff)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # CSS/JS : 1 mois avec revalidation
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=2592000, must-revalidate"
+  </FilesMatch>
+
+  # HTML : court cache + revalidation
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ─── Types MIME WebP ──────────────────────────────────────
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+</IfModule>
