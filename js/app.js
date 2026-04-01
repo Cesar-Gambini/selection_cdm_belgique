@@ -247,7 +247,7 @@
       <div class="step-content">
         <div class="cards-grid" role="listbox" aria-label="Liste des ${cfg.label}"></div>
       </div>
-      <div class="ad-slot ad-rectangle">ESPACE PUBLICITAIRE</div>
+      <div class="ad-slot ad-rectangle"></div>
       <nav class="step-nav" aria-label="Navigation étapes">
         <button class="btn btn-secondary btn-prev" aria-label="Étape précédente">
           <span class="arrow">&larr;</span>
@@ -333,7 +333,7 @@
         <p class="step-subtitle" style="color:var(--gris); font-size:0.85rem; margin-top:0.5rem;">En cas de blessure, 1 remplaçant par ligne</p>
       </div>
       <div class="step-content" id="reserves-content"></div>
-      <div class="ad-slot ad-rectangle">ESPACE PUBLICITAIRE</div>
+      <div class="ad-slot ad-rectangle"></div>
       <nav class="step-nav" aria-label="Navigation étapes">
         <button class="btn btn-secondary btn-prev" aria-label="Étape précédente">
           <span class="arrow">&larr;</span>
@@ -534,7 +534,7 @@
         </button>
       </div>
 
-      <div class="ad-slot ad-leaderboard" style="margin-bottom: var(--spacing-lg);">ESPACE PUBLICITAIRE</div>
+      <div class="ad-slot ad-leaderboard" style="margin-bottom: var(--spacing-lg);"></div>
     `;
 
     section.innerHTML = html;

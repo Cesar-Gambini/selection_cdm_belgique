@@ -107,11 +107,11 @@ a {
 
 /* ─── AD SLOTS ──────────────────────────────────────────── */
 .ad-slot {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  background: #1a1a1a;
-  border: 1px dashed var(--gris-fonce);
+  background: transparent;
+  border: none;
   color: var(--gris);
   font-size: 0.7rem;
   letter-spacing: 0.15em;
