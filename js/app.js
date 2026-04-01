@@ -41,36 +41,79 @@
   const stepsContainer = $('#steps-container');
 
   // ─── URL DECODING (shared link) ─────────────────────────
+  // Maps for compact URL format
+  const SHORT_TO_PREFIX = { g: 'gk', d: 'def', m: 'mil', a: 'att' };
+  const SHORT_TO_KEY = { g: 'Gardien', d: 'Défenseur', m: 'Milieu', a: 'Attaquant' };
+
+  function numToId(prefix, num) {
+    return prefix + '_' + String(num).padStart(2, '0');
+  }
+
   function checkSharedURL() {
     const params = new URLSearchParams(window.location.search);
-    const hasParams = STEPS_CONFIG.some(s => params.has(s.param));
 
-    if (!hasParams) return false;
+    // Detect format: compact (g,d,m,a) or legacy (gardiens,defenseurs,...)
+    const isCompact = params.has('g') || params.has('d') || params.has('m') || params.has('a');
+    const isLegacy = STEPS_CONFIG.some(s => params.has(s.param));
+
+    if (!isCompact && !isLegacy) return false;
 
     let valid = true;
-    STEPS_CONFIG.forEach(cfg => {
-      const raw = params.get(cfg.param);
-      if (!raw) { valid = false; return; }
-      const ids = raw.split(',').filter(Boolean);
-      const validIds = ids.filter(id =>
-        PLAYERS.some(p => p.id === id && p.position === cfg.key)
-      );
-      if (validIds.length !== cfg.required) { valid = false; return; }
-      state.selections[cfg.key] = validIds;
-    });
 
-    if (!valid) return false;
-
-    // Decode reserves (optional — older links may not have them)
-    const subsRaw = params.get('subs');
-    if (subsRaw) {
-      const subIds = subsRaw.split(',').filter(Boolean);
-      subIds.forEach(id => {
-        const player = PLAYERS.find(p => p.id === id);
-        if (player && state.reserves.hasOwnProperty(player.position)) {
-          state.reserves[player.position] = id;
-        }
+    if (isCompact) {
+      ['g', 'd', 'm', 'a'].forEach(short => {
+        const key = SHORT_TO_KEY[short];
+        const prefix = SHORT_TO_PREFIX[short];
+        const cfg = STEPS_CONFIG.find(c => c.key === key);
+        const raw = params.get(short);
+        if (!raw) { valid = false; return; }
+        const ids = raw.split(',').filter(Boolean).map(n => numToId(prefix, n));
+        const validIds = ids.filter(id => PLAYERS.some(p => p.id === id && p.position === key));
+        if (validIds.length !== cfg.required) { valid = false; return; }
+        state.selections[key] = validIds;
       });
+
+      if (!valid) return false;
+
+      const subsRaw = params.get('s');
+      if (subsRaw) {
+        subsRaw.split(',').filter(Boolean).forEach(token => {
+          // Token format: d4, m8, a2 (position letter + number)
+          const posLetter = token.charAt(0);
+          const num = token.substring(1);
+          const prefix = SHORT_TO_PREFIX[posLetter];
+          const key = SHORT_TO_KEY[posLetter];
+          if (prefix && key) {
+            const id = numToId(prefix, num);
+            const player = PLAYERS.find(p => p.id === id);
+            if (player && state.reserves.hasOwnProperty(key)) {
+              state.reserves[key] = id;
+            }
+          }
+        });
+      }
+    } else {
+      // Legacy format
+      STEPS_CONFIG.forEach(cfg => {
+        const raw = params.get(cfg.param);
+        if (!raw) { valid = false; return; }
+        const ids = raw.split(',').filter(Boolean);
+        const validIds = ids.filter(id => PLAYERS.some(p => p.id === id && p.position === cfg.key));
+        if (validIds.length !== cfg.required) { valid = false; return; }
+        state.selections[cfg.key] = validIds;
+      });
+
+      if (!valid) return false;
+
+      const subsRaw = params.get('subs');
+      if (subsRaw) {
+        subsRaw.split(',').filter(Boolean).forEach(id => {
+          const player = PLAYERS.find(p => p.id === id);
+          if (player && state.reserves.hasOwnProperty(player.position)) {
+            state.reserves[player.position] = id;
+          }
+        });
+      }
     }
 
     state.isViewingShared = true;
@@ -461,6 +504,10 @@
       <div class="share-section">
         <h3 class="share-title">Partage ta sélection</h3>
         <div class="share-buttons">
+          <button class="share-btn preview" id="preview-btn" aria-label="Aperçu capture d'écran">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>Aperçu</span>
+          </button>
           <button class="share-btn twitter" onclick="window.open('https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareURL)}', '_blank')" aria-label="Partager sur Twitter">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             <span>Twitter / X</span>
@@ -531,6 +578,12 @@
       });
     }
 
+    // Preview handler
+    const previewBtn = section.querySelector('#preview-btn');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', openPreviewOverlay);
+    }
+
     // Restart handler
     const restartBtn = section.querySelector('#restart-btn');
     if (restartBtn) {
@@ -544,16 +597,123 @@
     }
   }
 
-  // ─── BUILD SHARE URL ───────────────────────────────────
+  // ─── PREVIEW OVERLAY (screenshot-friendly) ────────────
+  function openPreviewOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'preview-overlay';
+    overlay.id = 'preview-overlay';
+
+    let html = `
+      <div class="preview-card">
+        <button class="preview-close" id="preview-close" aria-label="Fermer l'aperçu">&times;</button>
+        <div class="preview-header">
+          <div class="preview-flag"><span class="pf-black"></span><span class="pf-yellow"></span><span class="pf-red"></span></div>
+          <p class="preview-overline">Coupe du Monde 2026</p>
+          <h2 class="preview-title">Ma sélection <span class="preview-highlight">belge</span></h2>
+        </div>
+    `;
+
+    STEPS_CONFIG.forEach(cfg => {
+      const players = state.selections[cfg.key].map(id => PLAYERS.find(p => p.id === id)).filter(Boolean);
+      html += `
+        <div class="preview-group">
+          <div class="preview-group-label">${cfg.label} <span class="preview-group-count">${players.length}</span></div>
+          <div class="preview-players">
+      `;
+      players.forEach(p => {
+        const initials = p.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        html += `<div class="preview-player">
+          <div class="preview-avatar"><span class="preview-initials">${initials}</span></div>
+          <span class="preview-name">${p.name}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+
+    // Reserves
+    const reservePlayers = Object.entries(state.reserves)
+      .map(([, id]) => PLAYERS.find(p => p.id === id))
+      .filter(Boolean);
+
+    if (reservePlayers.length > 0) {
+      html += `<div class="preview-group preview-group--reserves">
+        <div class="preview-group-label">Réservistes <span class="preview-group-count">${reservePlayers.length}</span></div>
+        <div class="preview-players">`;
+      reservePlayers.forEach(p => {
+        const initials = p.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        html += `<div class="preview-player">
+          <div class="preview-avatar preview-avatar--reserve"><span class="preview-initials">${initials}</span></div>
+          <span class="preview-name">${p.name}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
+    html += `
+        <div class="preview-footer">
+          <span>maselectiondiables26.com</span>
+        </div>
+      </div>
+    `;
+
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+
+    // Force reflow then animate in
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+
+    // Load photos
+    overlay.querySelectorAll('.preview-player').forEach(el => {
+      const name = el.querySelector('.preview-name').textContent;
+      const player = PLAYERS.find(p => p.name === name);
+      if (player && player.photo) {
+        const img = new Image();
+        img.alt = player.name;
+        img.onload = function () {
+          const avatarEl = el.querySelector('.preview-avatar');
+          const initEl = avatarEl.querySelector('.preview-initials');
+          if (initEl) initEl.remove();
+          img.className = 'preview-img';
+          avatarEl.appendChild(img);
+        };
+        img.src = player.photo;
+      }
+    });
+
+    // Close handlers
+    const close = () => {
+      overlay.classList.remove('visible');
+      setTimeout(() => overlay.remove(), 300);
+    };
+    overlay.querySelector('#preview-close').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+    });
+  }
+
+  // ─── BUILD SHARE URL (compact) ─────────────────────────
+  function stripPrefix(id) {
+    return id.replace(/^[a-z]+_0?/, '');
+  }
+
   function buildShareURL() {
     const params = new URLSearchParams();
+    // Use short param names and strip ID prefixes: gk_01 → 1
+    const shortParams = { Gardien: 'g', Défenseur: 'd', Milieu: 'm', Attaquant: 'a' };
     STEPS_CONFIG.forEach(cfg => {
-      params.set(cfg.param, state.selections[cfg.key].join(','));
+      const nums = state.selections[cfg.key].map(stripPrefix);
+      params.set(shortParams[cfg.key], nums.join(','));
     });
-    // Reserves
-    const subs = [state.reserves.Défenseur, state.reserves.Milieu, state.reserves.Attaquant].filter(Boolean);
+    // Reserves — prefix with position letter: d4,m8,a2
+    const KEY_TO_SHORT = { Défenseur: 'd', Milieu: 'm', Attaquant: 'a' };
+    const subs = Object.entries(state.reserves)
+      .filter(([, id]) => id)
+      .map(([key, id]) => KEY_TO_SHORT[key] + stripPrefix(id));
     if (subs.length) {
-      params.set('subs', subs.join(','));
+      params.set('s', subs.join(','));
     }
     return window.location.origin + window.location.pathname + '?' + params.toString();
   }

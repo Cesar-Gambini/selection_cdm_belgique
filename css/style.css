@@ -1027,6 +1027,236 @@ a {
 .share-btn.copied .default-text { display: none; }
 .share-btn.copied .copied-text { display: inline; }
 
+/* Preview share button */
+.share-btn.preview {
+  background: rgba(253, 218, 36, 0.1);
+  border-color: var(--jaune);
+  color: var(--jaune);
+}
+.share-btn.preview:hover {
+  background: rgba(253, 218, 36, 0.2);
+}
+
+/* ─── PREVIEW OVERLAY (screenshot) ─────────────────────── */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.preview-overlay.visible {
+  opacity: 1;
+}
+
+.preview-card {
+  background: #0A0A0A;
+  border: 1px solid var(--gris-border);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.preview-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--gris);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.preview-close:hover {
+  color: var(--blanc);
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gris-border);
+}
+
+.preview-flag {
+  display: inline-flex;
+  gap: 0;
+  margin-bottom: 0.5rem;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.preview-flag span {
+  width: 10px;
+  height: 16px;
+}
+
+.pf-black { background: #0A0A0A; border: 1px solid #333; border-right: none; }
+.pf-yellow { background: #FDDA24; }
+.pf-red { background: #E30613; }
+
+.preview-overline {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--rouge);
+  margin-bottom: 0.25rem;
+}
+
+.preview-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--blanc);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.preview-highlight {
+  color: var(--jaune);
+}
+
+.preview-group {
+  margin-bottom: 0.8rem;
+}
+
+.preview-group-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gris);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.preview-group-label::before,
+.preview-group-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gris-border);
+}
+
+.preview-group-count {
+  color: var(--jaune);
+  font-size: 0.6rem;
+}
+
+.preview-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.preview-player {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #141414;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+}
+
+.preview-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.preview-avatar--reserve {
+  border: 1px dashed var(--gris);
+}
+
+.preview-initials {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--gris);
+  text-transform: uppercase;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-name {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--blanc);
+  white-space: nowrap;
+}
+
+.preview-group--reserves {
+  opacity: 0.7;
+}
+
+.preview-footer {
+  text-align: right;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--gris-border);
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--gris);
+  text-transform: uppercase;
+}
+
+@media (max-width: 480px) {
+  .preview-card {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .preview-title {
+    font-size: 1.1rem;
+  }
+
+  .preview-name {
+    font-size: 0.58rem;
+  }
+
+  .preview-player {
+    padding: 0.2rem 0.4rem 0.2rem 0.2rem;
+  }
+
+  .preview-avatar {
+    width: 22px;
+    height: 22px;
+  }
+}
+
 /* Restart button */
 .recap-actions {
   display: flex;
