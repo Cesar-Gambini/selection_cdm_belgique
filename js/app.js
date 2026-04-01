@@ -207,7 +207,7 @@
 
     // Load photo — onload before src
     const img = new Image();
-    img.alt = player.name;
+    img.alt = `${player.name}, ${player.position} belge - ${player.club}`;
     img.onload = function () {
       const avatarEl = card.querySelector('.player-avatar');
       if (!avatarEl) return;
